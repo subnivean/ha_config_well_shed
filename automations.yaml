@@ -38,6 +38,7 @@
     data:
       message: Dehumidifier and heater have been turned off
     alias: Send a notification to Mark's phone
+    enabled: false
   mode: single
 - id: '1737297383581'
   alias: Turn on Heater

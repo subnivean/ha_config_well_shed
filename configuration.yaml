@@ -47,3 +47,18 @@ binary_sensor:
           {% else %}
             mdi:check-circle
           {% endif %}
+      outside_temp_sensor_inactive:
+        friendly_name: "Outside Temp Sensor Inactive"
+        value_template: >
+          {% set last_updated = states.sensor.aqara_bh1_outside_temperature.last_updated %}
+          {% if last_updated is not none %}
+            {{ (now() - last_updated).total_seconds() > 10800 }}
+          {% else %}
+            true
+          {% endif %}
+        icon_template: >
+          {% if is_state('binary_sensor.outside_temp_sensor_inactive', 'on') %}
+            mdi:alert
+          {% else %}
+            mdi:check-circle
+          {% endif %}

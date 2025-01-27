@@ -45,7 +45,7 @@
   description: ''
   triggers:
   - value_template: '{{ states(''sensor.aqara_bh2_on_wall_temperature_2'') | float
-      < (states(''sensor.target_temperature'') | float - 2) }}
+      < (states(''sensor.target_temperature'') | float - 1.5) }}
 
       '
     trigger: template
@@ -87,4 +87,21 @@
     metadata: {}
     data:
       message: Inside temp sensor has been inactive a long time
+  mode: single
+- id: '1737336900703'
+  alias: Check Outside Temp Sensor
+  description: ''
+  triggers:
+  - alias: Outside Temp Sensor becomes inactive
+    trigger: state
+    entity_id:
+    - binary_sensor.outside_temp_sensor_inactive
+  conditions: []
+  actions:
+  - alias: Notify Mark via the companion phone app
+    action: notify.mobile_app_pixel_8
+    metadata: {}
+    data:
+      message: The outside temp sensor has been inactive a long time
+      title: Hello?
   mode: single

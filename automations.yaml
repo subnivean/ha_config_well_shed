@@ -1,107 +1,115 @@
-- id: '1735577184308'
+- id: "1735577184308"
   alias: Turn on Dehumidifier
-  description: ''
+  description: ""
   triggers:
-  - value_template: '{{ states(''sensor.aqara_bh2_on_wall_temperature_2'') | float
-      < (states(''sensor.target_temperature'') | float - 1) }}
+    - value_template:
+        "{{ states('sensor.aqara_bh2_on_wall_temperature_2') | float
+        < (states('sensor.well_shed_target_temperature') | float - 1) }}
 
-      '
-    trigger: template
+        "
+      trigger: template
   conditions: []
   actions:
-  - type: turn_on
-    device_id: 0691808aefe989c8bb43a9413d476dc1
-    entity_id: 39d124a07772e2c67ecf740a47e05379
-    domain: switch
+    - type: turn_on
+      device_id: 0691808aefe989c8bb43a9413d476dc1
+      entity_id: 39d124a07772e2c67ecf740a47e05379
+      domain: switch
   mode: single
-- id: '1735577543920'
+- id: "1735577543920"
   alias: Turn off Dehumidifier and Heater
-  description: ''
+  description: ""
   triggers:
-  - value_template: '{{ states(''sensor.aqara_bh2_on_wall_temperature_2'') | float
-      > (states(''sensor.target_temperature'') | float + 1) }}
+    - value_template:
+        "{{ states('sensor.aqara_bh2_on_wall_temperature_2') | float
+        > (states('sensor.well_shed_target_temperature') | float + 1) }}
 
-      '
-    trigger: template
+        "
+      trigger: template
   conditions: []
   actions:
-  - type: turn_off
-    device_id: 0691808aefe989c8bb43a9413d476dc1
-    entity_id: 39d124a07772e2c67ecf740a47e05379
-    domain: switch
-  - type: turn_off
-    device_id: fa9a84d0cf30e26215c1f2f73f9c300a
-    entity_id: 7b460f2ccfe7a2d8ba8648334ea6c01b
-    domain: switch
-  - action: notify.mobile_app_pixel_8
-    metadata: {}
-    data:
-      message: Dehumidifier and heater have been turned off
-    alias: Send a notification to Mark's phone
-    enabled: false
+    - type: turn_off
+      device_id: 0691808aefe989c8bb43a9413d476dc1
+      entity_id: 39d124a07772e2c67ecf740a47e05379
+      domain: switch
+    - type: turn_off
+      device_id: fa9a84d0cf30e26215c1f2f73f9c300a
+      entity_id: 7b460f2ccfe7a2d8ba8648334ea6c01b
+      domain: switch
+    - action: notify.mobile_app_pixel_8
+      metadata: {}
+      data:
+        message: Dehumidifier and heater have been turned off
+      alias: Send a notification to Mark's phone
+      enabled: false
   mode: single
-- id: '1737297383581'
+- id: "1737297383581"
   alias: Turn on Heater
-  description: ''
+  description: ""
   triggers:
-  - value_template: '{{ states(''sensor.aqara_bh2_on_wall_temperature_2'') | float
-      < (states(''sensor.target_temperature'') | float - 1.5) }}
+    - value_template:
+        "{{ states('sensor.aqara_bh2_on_wall_temperature_2') | float
+        < (states('sensor.well_shed_target_temperature') | float - 1.5) }}
 
-      '
-    trigger: template
+        "
+      trigger: template
   conditions: []
   actions:
-  - type: turn_on
-    device_id: fa9a84d0cf30e26215c1f2f73f9c300a
-    entity_id: 7b460f2ccfe7a2d8ba8648334ea6c01b
-    domain: switch
+    - type: turn_on
+      device_id: fa9a84d0cf30e26215c1f2f73f9c300a
+      entity_id: 7b460f2ccfe7a2d8ba8648334ea6c01b
+      domain: switch
   mode: single
-- id: '1737303859441'
+- id: "1737303859441"
   alias: Notify Mark on low Well Shed temp
-  description: ''
+  description: ""
   triggers:
-  - value_template: '{{ states(''sensor.aqara_bh2_on_wall_temperature_2'') | float
-      < (states(''sensor.target_temperature'') | float - 3) }}
+    - alias: When the Well Shed temp falls to 3 degrees below the target temp
+      value_template:
+        "{{ states('sensor.aqara_bh2_on_wall_temperature_2') | float
+        < (states('sensor.well_shed_target_temperature') | float - 3) }}
 
-      '
-    trigger: template
-    alias: When the Well Shed temp falls to 3 degrees below the target temp
+        "
+      trigger: template
   conditions: []
   actions:
-  - alias: Send a notification to Mark's phone
-    action: notify.mobile_app_pixel_8
-    metadata: {}
-    data:
-      message: The well shed temp has fallen to 3 degrees below the target temp!
+    - alias: Send a notification to Mark's phone
+      action: notify.mobile_app_pixel_8
+      metadata: {}
+      data:
+        message: The well shed temp has fallen to 3 degrees below the target temp!
   mode: single
-- id: '1737305396283'
+- id: "1737305396283"
   alias: Check Inside Temp Sensor
-  description: ''
+  description: ""
   triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.inside_temp_sensor_inactive
+    - trigger: state
+      entity_id:
+        - binary_sensor.inside_thermometer_connection
+      from: "on"
+      to: "off"
   conditions: []
   actions:
-  - action: notify.mobile_app_pixel_8
-    metadata: {}
-    data:
-      message: Inside temp sensor has been inactive a long time
+    - action: notify.mobile_app_pixel_8
+      metadata: {}
+      data:
+        message: Inside temp sensor has been inactive a long time
   mode: single
-- id: '1737336900703'
+- id: "1737336900703"
   alias: Check Outside Temp Sensor
-  description: ''
+  description: ""
   triggers:
-  - alias: Outside Temp Sensor becomes inactive
-    trigger: state
-    entity_id:
-    - binary_sensor.outside_temp_sensor_inactive
+    - alias: Outside Temp Sensor becomes inactive
+      trigger: state
+      entity_id:
+        - binary_sensor.outside_thermometer_connection
+      from: "on"
+      to: "off"
   conditions: []
   actions:
-  - alias: Notify Mark via the companion phone app
-    action: notify.mobile_app_pixel_8
-    metadata: {}
-    data:
-      message: The outside temp sensor has been inactive a long time
-      title: Hello?
+    - alias: Notify Mark via the companion phone app
+      action: notify.mobile_app_pixel_8
+      metadata: {}
+      data:
+        message: The outside temp sensor has been inactive a long time
+        title: Hello?
   mode: single

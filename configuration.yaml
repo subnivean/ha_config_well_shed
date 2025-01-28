@@ -14,51 +14,7 @@ http:
   ssl_certificate: /ssl/fullchain.pem
   ssl_key: /ssl/privkey.pem
   
-template:
-  - sensor:
-      - name: "Target Temperature"
-        unit_of_measurement: "°F"
-        state: >
-          {% if states('sensor.aqara_bh1_outside_temperature') | float >= 39 %}
-            {{ states('sensor.aqara_bh1_outside_temperature') | float }}
-          {% else %}
-            39
-          {% endif %}
-
 # Added by MSK on 2025-01-11 to increase the logging history from 10 days to 1.5 years
 recorder:
   purge_keep_days: 548
   
-binary_sensor:
-  - platform: template
-    sensors:
-      inside_temp_sensor_inactive:
-        friendly_name: "Inside Temp Sensor Inactive"
-        value_template: >
-          {% set last_updated = states.sensor.aqara_bh2_on_wall_temperature_2.last_updated %}
-          {% if last_updated is not none %}
-            {{ (now() - last_updated).total_seconds() > 10800 }}
-          {% else %}
-            true
-          {% endif %}
-        icon_template: >
-          {% if is_state('binary_sensor.inside_temp_sensor_inactive', 'on') %}
-            mdi:alert
-          {% else %}
-            mdi:check-circle
-          {% endif %}
-      outside_temp_sensor_inactive:
-        friendly_name: "Outside Temp Sensor Inactive"
-        value_template: >
-          {% set last_updated = states.sensor.aqara_bh1_outside_temperature.last_updated %}
-          {% if last_updated is not none %}
-            {{ (now() - last_updated).total_seconds() > 10800 }}
-          {% else %}
-            true
-          {% endif %}
-        icon_template: >
-          {% if is_state('binary_sensor.outside_temp_sensor_inactive', 'on') %}
-            mdi:alert
-          {% else %}
-            mdi:check-circle
-          {% endif %}

@@ -16,7 +16,7 @@
       domain: switch
   mode: single
 - id: "1735577543920"
-  alias: Turn off Dehumidifier and Heater
+  alias: Turn off Dehumidifier and Space Heater
   description: ""
   triggers:
     - value_template:
@@ -43,7 +43,7 @@
       enabled: false
   mode: single
 - id: "1737297383581"
-  alias: Turn on Heater
+  alias: Turn on Space Heater
   description: ""
   triggers:
     - value_template:
@@ -60,7 +60,7 @@
       domain: switch
   mode: single
 - id: "1737303859441"
-  alias: Notify Mark on low Well Shed temp
+  alias: Notify app on low Well Shed temp
   description: ""
   triggers:
     - alias: When the Well Shed temp falls to 3 degrees below the target temp
@@ -112,4 +112,56 @@
       data:
         message: The outside temp sensor has been inactive a long time
         title: Hello?
+  mode: single
+- id: "1738506533020"
+  alias: Turn on Heat
+  description: ""
+  triggers:
+    - value_template:
+        "{{ states('sensor.aqara_bh2_on_wall_temperature_2') | float
+        < (states('sensor.well_shed_target_temperature') | float - 1) }}
+
+        "
+      trigger: template
+  conditions: []
+  actions:
+    - if:
+        - condition: numeric_state
+          entity_id: sensor.aqara_bh2_on_wall_humidity_2
+          above: 50
+      then:
+        - type: turn_on
+          device_id: 0691808aefe989c8bb43a9413d476dc1
+          entity_id: 39d124a07772e2c67ecf740a47e05379
+          domain: switch
+      else:
+        - type: turn_on
+          device_id: fa9a84d0cf30e26215c1f2f73f9c300a
+          entity_id: 7b460f2ccfe7a2d8ba8648334ea6c01b
+          domain: switch
+  mode: single
+- id: "1738591521483"
+  alias: Notify app if Dehumidifier is on but not drawing current
+  description: ""
+  triggers:
+    - type: turned_on
+      device_id: 0691808aefe989c8bb43a9413d476dc1
+      entity_id: 39d124a07772e2c67ecf740a47e05379
+      domain: switch
+      trigger: device
+      for:
+        hours: 0
+        minutes: 1
+        seconds: 0
+  conditions:
+    - condition: numeric_state
+      entity_id: sensor.sp26_energy_power
+      below: 100
+  actions:
+    - action: notify.mobile_app_pixel_8
+      metadata: {}
+      data:
+        message:
+          The dehumidifier is on but not drawing current. Could the internal
+          reservoir be full?
   mode: single
